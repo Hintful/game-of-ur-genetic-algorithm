@@ -17,6 +17,16 @@ STATE:
     if a white piece would be moved 15 squares total, so onto 18, it is removed
     18 and 19 are the black safe goal squares, with 19 being the rosette
     if a black piece would move onto square 20 it is removed from the board
+
+    > Visual Representation of index on the board
+
+    * White side *
+    							  [18]
+    < 3> [ 2] [ 1] [ 0]           <17> [16]
+    [ 8] [ 9] [10] <11> [12] [13] [14] [15]
+    < 7> [ 6] [ 5] [ 4]           <19> [18]
+    							  [20]
+  	* Black side *
 """
 
 class Agent:
