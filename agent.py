@@ -111,6 +111,7 @@ colourToPlay = sys.argv[2]
 with open(agentFile) as f:
     genes = f.read().splitlines()
 
+#test for IO
 agent = Agent(genes, colourToPlay)
 inState = agent.readNextState()
 agent.printState(inState)

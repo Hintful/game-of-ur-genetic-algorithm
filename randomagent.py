@@ -21,20 +21,8 @@ STATE:
 
 class Agent:
 
-    #The file corresponding to an agent will contain the 10 genes, and the colour
-    #is provided by the manager that makes 2 agents compete
-    def __init__(self, genes, colour):
-        self.g1 = genes[0]
-        self.g2 = genes[1]
-        self.g3 = genes[2]
-        self.g4 = genes[3]
-        self.g5 = genes[4]
-        self.g6 = genes[5]
-        self.g7 = genes[6]
-        self.g8 = genes[7]
-        self.g9 = genes[8]
-        self.g10 = genes[9]
-
+    #random agent doesnt care about genes, just the colour its playing
+    def __init__(self, colour):
         if colour == 'w':
             self.colour = Piece.White
         else:
@@ -106,12 +94,10 @@ class Agent:
         stateToReturn = list(map(int, readState.split(' ')))
         return stateToReturn
 
-agentFile = sys.argv[1]
-colourToPlay = sys.argv[2]
-with open(agentFile) as f:
-    genes = f.read().splitlines()
+colourToPlay = sys.argv[1]
 
-agent = Agent(genes, colourToPlay)
+#test for IO
+agent = Agent(colourToPlay)
 inState = agent.readNextState()
 agent.printState(inState)
 agent.prettyPrintState(inState)
