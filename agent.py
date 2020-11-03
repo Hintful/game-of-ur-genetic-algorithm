@@ -1,5 +1,6 @@
 import sys
 from enum import IntEnum
+from copy import deepcopy
 
 class Piece(IntEnum):
     NoPiece = 0
@@ -18,6 +19,9 @@ STATE:
     18 and 19 are the black safe goal squares, with 19 being the rosette
     if a black piece would move onto square 20 it is removed from the board
 
+    21 represents the number of black pieces that are not yet played
+    22 represents the number of white pieces that are not yet played
+
     > Visual Representation of index on the board
 
     * White side *
@@ -27,6 +31,8 @@ STATE:
     < 7> [ 6] [ 5] [ 4]           <19> [18]
     							  [20]
   	* Black side *
+
+  	4-tuple: (board, # of unplayed black pieces, # of unplayed white pieces, die roll)
 """
 
 class Agent:
@@ -44,6 +50,8 @@ class Agent:
         self.g8 = genes[7]
         self.g9 = genes[8]
         self.g10 = genes[9]
+
+        self.numHand = 4 # number of pieces yet to be played
 
         if colour == 'w':
             self.colour = Piece.White
@@ -116,12 +124,69 @@ class Agent:
         stateToReturn = list(map(int, readState.split(' ')))
         return stateToReturn
 
+    def getNextIndex(self, curIndex, roll): # gets next index on the board after moving "roll" squares
+    	if(self.colour == Piece.White):
+    		if(curIndex == -1): # playing from hand
+    			return roll - 1
+    		elif(curIndex + roll >= 4 and curIndex + roll <= 7):
+    			return curIndex + roll + 4
+    		else:
+    			return min(curIndex + roll, 18)
+    	elif(self.colour == Piece.Black):
+    		if(curIndex == -1):
+    			return roll + 3
+    		elif(curIndex + roll <= 15):
+    			return curIndex + roll
+    		else: # curIndex + roll >= 16
+    			return min(curIndex + roll + 2, 20)
+
+    def getSuccessors(self, state):
+    	successors = [] # list containing possible successor states
+
+    	# reference var
+    	board = state[0]
+    	roll = state[3]
+
+    	for i in range(len(board)): # search through the board
+    		if(board[i] == self.colour.value):
+    			nextIndex = self.getNextIndex(i, roll)
+    			if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # piece can exit
+    				newState = deepcopy(state)
+    				newBoard = newState[0]
+    				newBoard[i] = 0
+
+    				successors.append(newState)
+    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour.value) and nextIndex != 11)): # sqaure unoccupied
+    				newState = deepcopy(state)
+    				newBoard = newState[0]
+    				newBoard[i] = 0
+    				newBoard[nextIndex] = self.colour.value
+
+    				successors.append(newState)
+    			elif(state[nextIndex] == self.colour.value):
+    				continue
+    			# else: 
+    	if(state[self.colour.value] > 0): # number of unplayed pieces > 0
+    		nextIndex = self.getNextIndex(-1, roll)
+    		if(board[nextIndex] == 0):
+    			newState = deepcopy(state)
+    			newBoard = newState[0]
+    			newBoard[nextIndex] = self.colour.value
+    			newState[self.colour.value] -= 1 # decrease number of unplayed pieces
+
+    			successors.append(newState)
+
+    	return successors
+
+
+
+
 agentFile = sys.argv[1]
 colourToPlay = sys.argv[2]
 with open(agentFile) as f:
     genes = f.read().splitlines()
 
-#test for IO
+# test for IO
 agent = Agent(genes, colourToPlay)
 inState = agent.readNextState()
 agent.printState(inState)
