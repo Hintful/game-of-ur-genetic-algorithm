@@ -55,16 +55,24 @@ class Agent:
         else:
             self.colour = Piece.Black
 
-    def printState(self, state):
+    #pass this the full list of states
+    def printState(self, stateList):
         #prints the state in a non-readable way, to give to another state
-        stateAsStrings = [str(int) for int in state]
+        stateAsStrings = [str(int) for int in stateList[0]]
         stateString = ' '.join(stateAsStrings)
+        for index in range(1, 4):
+            stateString += " " + str(stateList[index])
         print(stateString)
         
 
-    def prettyPrintState(self, state):
+    def prettyPrintState(self, stateList):
         #pretty prints the state in a human-readable way
         line = ""
+        state = stateList[0]
+
+        #print the white pieces above their home
+        print(str(stateList[2]))
+
         #print the first 4 backwards, to match the game board
         for index in range(0, 4):
             if state[3 - index] == Piece.White:
@@ -115,11 +123,18 @@ class Agent:
                 line += 'o'
         print(line)
 
+        #print the black pieces below theirs
+        print(str(stateList[1]))
+
 
     def readNextState(self):
         readState = input()
-        stateToReturn = list(map(int, readState.split(' ')))
-        return stateToReturn
+        ints = list(map(int, readState.split(' ')))
+        state = ints[:20] #the first 20, indexes 0 to 19
+        blackPieces = ints[20]
+        whitePieces = ints[21]
+        dieRoll = ints[22]
+        return [state, blackPieces, whitePieces, dieRoll]
 
     def getNextIndex(self, curIndex, roll): # gets next index on the board after moving "roll" squares
         if(self.colour == Piece.White):
