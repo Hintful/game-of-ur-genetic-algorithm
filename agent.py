@@ -148,7 +148,7 @@ class Agent:
     	roll = state[3]
 
     	for i in range(len(board)): # search through the board
-    		if(board[i] == self.colour.value):
+    		if(board[i] == self.colour):
     			nextIndex = self.getNextIndex(i, roll)
     			if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # piece can exit
     				newState = deepcopy(state)
@@ -156,23 +156,23 @@ class Agent:
     				newBoard[i] = 0
 
     				successors.append(newState)
-    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour.value) and nextIndex != 11)): # sqaure unoccupied
+    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour) and nextIndex != 11)): # sqaure unoccupied
     				newState = deepcopy(state)
     				newBoard = newState[0]
     				newBoard[i] = 0
-    				newBoard[nextIndex] = self.colour.value
+    				newBoard[nextIndex] = self.colour
 
     				successors.append(newState)
-    			elif(state[nextIndex] == self.colour.value):
+    			elif(state[nextIndex] == self.colour):
     				continue
     			# else: 
-    	if(state[self.colour.value] > 0): # number of unplayed pieces > 0
+    	if(state[self.colour] > 0): # number of unplayed pieces > 0
     		nextIndex = self.getNextIndex(-1, roll)
     		if(board[nextIndex] == 0):
     			newState = deepcopy(state)
     			newBoard = newState[0]
-    			newBoard[nextIndex] = self.colour.value
-    			newState[self.colour.value] -= 1 # decrease number of unplayed pieces
+    			newBoard[nextIndex] = self.colour
+    			newState[self.colour] -= 1 # decrease number of unplayed pieces
 
     			successors.append(newState)
 
