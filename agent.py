@@ -19,17 +19,14 @@ STATE:
     18 and 19 are the black safe goal squares, with 19 being the rosette
     if a black piece would move onto square 20 it is removed from the board
 
-    21 represents the number of black pieces that are not yet played
-    22 represents the number of white pieces that are not yet played
-
     > Visual Representation of index on the board
 
     * White side *
-    							  [18]
+
     < 3> [ 2] [ 1] [ 0]           <17> [16]
     [ 8] [ 9] [10] <11> [12] [13] [14] [15]
     < 7> [ 6] [ 5] [ 4]           <19> [18]
-    							  [20]
+
   	* Black side *
 
   	4-tuple: (board, # of unplayed black pieces, # of unplayed white pieces, die roll)
@@ -156,16 +153,20 @@ class Agent:
     				newBoard[i] = 0
 
     				successors.append(newState)
-    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour) and nextIndex != 11)): # sqaure unoccupied
+    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour) and nextIndex != 11)): # sqaure unoccupied OR taken by enemy but not rosette
     				newState = deepcopy(state)
     				newBoard = newState[0]
     				newBoard[i] = 0
     				newBoard[nextIndex] = self.colour
 
+                    if(board[nextIndex] == (3 - self.colour)): # taking enemy piece
+                        newState[3 - self.colour] += 1 # increase number of opponent's unplayed pieces
+
     				successors.append(newState)
-    			elif(state[nextIndex] == self.colour):
-    				continue
+    			# elif(state[nextIndex] == self.colour):
+    			# 	continue
     			# else: 
+
     	if(state[self.colour] > 0): # number of unplayed pieces > 0
     		nextIndex = self.getNextIndex(-1, roll)
     		if(board[nextIndex] == 0):
