@@ -1,6 +1,11 @@
 import sys
+import math
 from enum import IntEnum
 from copy import deepcopy
+
+# constant definition
+NUM_TOTAL_PIECES = 7
+NUM_GENES = 10
 
 class Piece(IntEnum):
     NoPiece = 0
@@ -37,18 +42,22 @@ class Agent:
     #The file corresponding to an agent will contain the 10 genes, and the colour
     #is provided by the manager that makes 2 agents compete
     def __init__(self, genes, colour):
-        self.g1 = genes[0]
-        self.g2 = genes[1]
-        self.g3 = genes[2]
-        self.g4 = genes[3]
-        self.g5 = genes[4]
-        self.g6 = genes[5]
-        self.g7 = genes[6]
-        self.g8 = genes[7]
-        self.g9 = genes[8]
-        self.g10 = genes[9]
+        # self.g1 = genes[0]
+        # self.g2 = genes[1]
+        # self.g3 = genes[2]
+        # self.g4 = genes[3]
+        # self.g5 = genes[4]
+        # self.g6 = genes[5]
+        # self.g7 = genes[6]
+        # self.g8 = genes[7]
+        # self.g9 = genes[8]
+        # self.g10 = genes[9]
+        self.g = [0] * NUM_GENES # init list containing genes
 
-        self.numHand = 4 # number of pieces yet to be played
+        for i in range(NUM_GENES):
+            self.g[i] = genes[i]
+
+        self.numHand = NUM_TOTAL_PIECES # number of pieces yet to be played
 
         if colour == 'w':
             self.colour = Piece.White
@@ -136,6 +145,16 @@ class Agent:
         dieRoll = ints[22]
         return [state, blackPieces, whitePieces, dieRoll]
 
+    def getNumPiecesOnBoard(self, state, player): # get number of specified player's pieces on the board
+        num = 0 # init
+
+        for i in state[0]: # iterate through the board
+            if(i == player):
+                num += 1
+
+        return num
+
+
     def getNextIndex(self, curIndex, roll): # gets next index on the board after moving "roll" squares
         if(self.colour == Piece.White):
             if(curIndex == -1): # playing from hand
@@ -193,6 +212,53 @@ class Agent:
                 successors.append(newState)
 
         return successors
+
+    # > State Evaluation Variables
+
+    # v[0]  Number of Pieces Not on the board
+    # v[1]  Number of Pieces on the board
+    # v[2]  Number of Pieces Scored (Removed from Board)
+    # v[3]  1 if there is a friendly piece on the central rosette, 0 otherwise
+    # v[4]  Probability of jumping an Enemy Piece BEFORE the central rosette (index 11)
+    # v[5]  Probability of jumping an Enemy Piece AFTER the central rosette (index 11)
+    # v[6]  Probability of losing a friendly piece BEFORE the central rosette
+    # v[7]  Probability of losing a friendly piece AFTER the central rosette
+    # v[8]  1 if the state of the board earns a bonus turn (a piece landed on a rosette), 0 otherwise
+    # v[9] Number of opponent pieces on the board
+
+
+    # > Roll Chances
+
+    # 0   1 in 16
+    # 1   4 in 16
+    # 2   6 in 16
+    # 3   4 in 16
+    # 4   1 in 16
+
+
+    def getBestSuccessor(self, states): # evaluates the best state from the given list of states
+        maxFitness = (-math.inf) # init
+        bestState = None
+
+        for state in states:
+            v = [0] * NUM_GENES # init
+
+            v[0] = -(state[self.colour])
+            v[1] = self.getNumPiecesOnBoard(state, self.colour)
+            v[2] = NUM_TOTAL_PIECES - (v1 + v2)
+            v[3] = 1 if state[0][11] == self.colour else 0
+            v[9] = self.getNumPiecesOnBoard(state, 3 - self.colour)
+
+            fitness = 0 # init
+
+            for i in range(NUM_GENES):
+                S += v[i] * self.g[i] # evaluate state value S
+
+            if(fitness > maxFitness):
+                maxFitness = S
+                bestState = state
+
+        return bestState
 
 
 
