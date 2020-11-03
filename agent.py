@@ -27,9 +27,9 @@ STATE:
     [ 8] [ 9] [10] <11> [12] [13] [14] [15]
     < 7> [ 6] [ 5] [ 4]           <19> [18]
 
-  	* Black side *
+    * Black side *
 
-  	4-tuple: (board, # of unplayed black pieces, # of unplayed white pieces, die roll)
+    4-tuple: (board, # of unplayed black pieces, # of unplayed white pieces, die roll)
 """
 
 class Agent:
@@ -122,62 +122,62 @@ class Agent:
         return stateToReturn
 
     def getNextIndex(self, curIndex, roll): # gets next index on the board after moving "roll" squares
-    	if(self.colour == Piece.White):
-    		if(curIndex == -1): # playing from hand
-    			return roll - 1
-    		elif(curIndex + roll >= 4 and curIndex + roll <= 7):
-    			return curIndex + roll + 4
-    		else:
-    			return min(curIndex + roll, 18)
-    	elif(self.colour == Piece.Black):
-    		if(curIndex == -1):
-    			return roll + 3
-    		elif(curIndex + roll <= 15):
-    			return curIndex + roll
-    		else: # curIndex + roll >= 16
-    			return min(curIndex + roll + 2, 20)
+        if(self.colour == Piece.White):
+            if(curIndex == -1): # playing from hand
+                return roll - 1
+            elif(curIndex + roll >= 4 and curIndex + roll <= 7):
+                return curIndex + roll + 4
+            else:
+                return min(curIndex + roll, 18)
+        elif(self.colour == Piece.Black):
+            if(curIndex == -1):
+                return roll + 3
+            elif(curIndex + roll <= 15):
+                return curIndex + roll
+            else: # curIndex + roll >= 16
+                return min(curIndex + roll + 2, 20)
 
     def getSuccessors(self, state):
-    	successors = [] # list containing possible successor states
+        successors = [] # list containing possible successor states
 
-    	# reference var
-    	board = state[0]
-    	roll = state[3]
+        # reference var
+        board = state[0]
+        roll = state[3]
 
-    	for i in range(len(board)): # search through the board
-    		if(board[i] == self.colour):
-    			nextIndex = self.getNextIndex(i, roll)
-    			if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # piece can exit
-    				newState = deepcopy(state)
-    				newBoard = newState[0]
-    				newBoard[i] = 0
+        for i in range(len(board)): # search through the board
+            if(board[i] == self.colour):
+                nextIndex = self.getNextIndex(i, roll)
+                if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # piece can exit
+                    newState = deepcopy(state)
+                    newBoard = newState[0]
+                    newBoard[i] = 0
 
-    				successors.append(newState)
-    			elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour) and nextIndex != 11)): # sqaure unoccupied OR taken by enemy but not rosette
-    				newState = deepcopy(state)
-    				newBoard = newState[0]
-    				newBoard[i] = 0
-    				newBoard[nextIndex] = self.colour
-
+                    successors.append(newState)
+                elif(board[nextIndex] == 0 or (board[nextIndex] == (3 - self.colour) and nextIndex != 11)): # sqaure unoccupied OR taken by enemy but not rosette
+                    newState = deepcopy(state)
+                    newBoard = newState[0]
+                    newBoard[i] = 0
+                    newBoard[nextIndex] = self.colour
+                    
                     if(board[nextIndex] == (3 - self.colour)): # taking enemy piece
                         newState[3 - self.colour] += 1 # increase number of opponent's unplayed pieces
 
-    				successors.append(newState)
-    			# elif(state[nextIndex] == self.colour):
-    			# 	continue
-    			# else: 
+                    successors.append(newState)
+                # elif(state[nextIndex] == self.colour):
+                #   continue
+                # else: 
 
-    	if(state[self.colour] > 0): # number of unplayed pieces > 0
-    		nextIndex = self.getNextIndex(-1, roll)
-    		if(board[nextIndex] == 0):
-    			newState = deepcopy(state)
-    			newBoard = newState[0]
-    			newBoard[nextIndex] = self.colour
-    			newState[self.colour] -= 1 # decrease number of unplayed pieces
+        if(state[self.colour] > 0): # number of unplayed pieces > 0
+            nextIndex = self.getNextIndex(-1, roll)
+            if(board[nextIndex] == 0):
+                newState = deepcopy(state)
+                newBoard = newState[0]
+                newBoard[nextIndex] = self.colour
+                newState[self.colour] -= 1 # decrease number of unplayed pieces
 
-    			successors.append(newState)
+                successors.append(newState)
 
-    	return successors
+        return successors
 
 
 
