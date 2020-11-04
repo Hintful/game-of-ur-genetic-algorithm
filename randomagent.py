@@ -94,10 +94,10 @@ class RandomAgent:
         stateToReturn = list(map(int, readState.split(' ')))
         return stateToReturn
 
-colourToPlay = sys.argv[1]
+# colourToPlay = sys.argv[1]
 
-# # test for IO
-# agent = Agent(colourToPlay)
-# inState = agent.readNextState()
-# agent.printState(inState)
-# agent.prettyPrintState(inState)
+# # # test for IO
+# # agent = Agent(colourToPlay)
+# # inState = agent.readNextState()
+# # agent.printState(inState)
+# # agent.prettyPrintState(inState)

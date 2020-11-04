@@ -319,16 +319,16 @@ class Agent:
 
 
 
-agentFile = sys.argv[1]
-colourToPlay = sys.argv[2]
-agentFile
-with open(agentFile) as f:
-    genes = f.read().splitlines()
+# agentFile = sys.argv[1]
+# colourToPlay = sys.argv[2]
+# agentFile
+# with open(agentFile) as f:
+#     genes = f.read().splitlines()
 
-# test for IO
-agent = Agent(genes, colourToPlay)
-inState = agent.readNextState()
-agent.printState(inState)
-agent.prettyPrintState(inState)
+# # test for IO
+# agent = Agent(genes, colourToPlay)
+# inState = agent.readNextState()
+# agent.printState(inState)
+# agent.prettyPrintState(inState)
 
-agent.getBestSuccessor(agent.getSuccessors(inState), inState) # test
+# agent.getBestSuccessor(agent.getSuccessors(inState), inState) # test
