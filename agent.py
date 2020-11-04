@@ -6,6 +6,15 @@ from copy import deepcopy
 # constant definition
 NUM_TOTAL_PIECES = 7
 NUM_GENES = 10
+BOARD_SIZE = 20
+
+# debug flag
+DEBUG = False
+
+def debug(s):
+    print(s) if DEBUG == True else ''
+
+
 
 class Piece(IntEnum):
     NoPiece = 0
@@ -55,7 +64,7 @@ class Agent:
         self.g = [0] * NUM_GENES # init list containing genes
 
         for i in range(NUM_GENES):
-            self.g[i] = genes[i]
+            self.g[i] = float(genes[i])
 
         self.numHand = NUM_TOTAL_PIECES # number of pieces yet to be played
 
@@ -155,21 +164,37 @@ class Agent:
         return num
 
 
-    def getNextIndex(self, curIndex, roll): # gets next index on the board after moving "roll" squares
-        if(self.colour == Piece.White):
+    def getNextIndex(self, curIndex, roll, player): # gets next index for the given player on the board after moving "roll" squares
+        if(player == Piece.White):
             if(curIndex == -1): # playing from hand
                 return roll - 1
             elif(curIndex + roll >= 4 and curIndex + roll <= 7):
                 return curIndex + roll + 4
             else:
                 return min(curIndex + roll, 18)
-        elif(self.colour == Piece.Black):
+        elif(player == Piece.Black):
             if(curIndex == -1):
                 return roll + 3
             elif(curIndex + roll <= 15):
                 return curIndex + roll
             else: # curIndex + roll >= 16
                 return min(curIndex + roll + 2, 20)
+
+    def enemyCapturable(self, board, roll, minIndex, maxIndex): # True if enemy capturing move exists within given board index from given board and die roll, False otherwise
+        for i in range(minIndex, maxIndex + 1 - roll): # from minIndex to (maxIndex - roll), inclusive
+            if(board[i] == self.colour):
+                nextIndex = self.getNextIndex(i, roll, self.colour)
+                if((board[nextIndex] == (3 - self.colour)) and nextIndex != 11):
+                    return True
+        return False
+
+    def allyCapturable(self, board, roll, minIndex, maxIndex): # True if an enemy move that captures ally piece exists within given board index from given board and die roll, False otherwise
+        for i in range(minIndex, maxIndex + 1 - roll):
+            if(board[i] == (3 - self.colour)):
+                nextIndex = self.getNextIndex(i, roll, 3 - self.colour)
+                if((board[nextIndex] == self.colour) and nextIndex != 11):
+                    return True
+        return False
 
     def getSuccessors(self, state):
         successors = [] # list containing possible successor states
@@ -180,7 +205,7 @@ class Agent:
 
         for i in range(len(board)): # search through the board
             if(board[i] == self.colour):
-                nextIndex = self.getNextIndex(i, roll)
+                nextIndex = self.getNextIndex(i, roll, self.colour)
                 if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # piece can exit
                     newState = deepcopy(state)
                     newBoard = newState[0]
@@ -202,7 +227,7 @@ class Agent:
                 # else: 
 
         if(state[self.colour] > 0): # number of unplayed pieces > 0
-            nextIndex = self.getNextIndex(-1, roll)
+            nextIndex = self.getNextIndex(-1, roll, self.colour)
             if(board[nextIndex] == 0):
                 newState = deepcopy(state)
                 newBoard = newState[0]
@@ -236,26 +261,44 @@ class Agent:
     # 4   1 in 16
 
 
-    def getBestSuccessor(self, states): # evaluates the best state from the given list of states
-        maxFitness = (-math.inf) # init
+    def getBestSuccessor(self, states, old_state): # evaluates the best state from the given list of states
+        max_S = (-math.inf) # init
         bestState = None
 
+        oldBoard = old_state[0]
+
         for state in states:
+            board = state[0]
             v = [0] * NUM_GENES # init
 
             v[0] = -(state[self.colour])
             v[1] = self.getNumPiecesOnBoard(state, self.colour)
-            v[2] = NUM_TOTAL_PIECES - (v1 + v2)
-            v[3] = 1 if state[0][11] == self.colour else 0
+            v[2] = NUM_TOTAL_PIECES - (-v[0] + v[1])
+            v[3] = 1 if board[11] == self.colour else 0
+            v[4] = float(4/16) * self.enemyCapturable(board, 1, 0, 10) + float(6/16) * self.enemyCapturable(board, 2, 0, 10) + float(4/16) * self.enemyCapturable(board, 3, 0, 10) \
+                + float(1/16) * self.enemyCapturable(board, 4, 0, 10)
+            v[5] = float(4/16) * self.enemyCapturable(board, 1, 12, 19) + float(6/16) * self.enemyCapturable(board, 2, 12, 19) + float(4/16) * self.enemyCapturable(board, 3, 12, 19) \
+                + float(1/16) * self.enemyCapturable(board, 4, 12, 19)
+            v[6] = -(float(4/16) * self.allyCapturable(board, 1, 0, 10) + float(6/16) * self.allyCapturable(board, 2, 0, 10) + float(4/16) * self.allyCapturable(board, 3, 0, 10) \
+                + float(1/16) * self.allyCapturable(board, 4, 0, 10))
+            v[7] = -(float(4/16) * self.allyCapturable(board, 1, 12, 19) + float(6/16) * self.allyCapturable(board, 2, 12, 19) + float(4/16) * self.allyCapturable(board, 3, 12, 19) \
+                + float(1/16) * self.allyCapturable(board, 4, 12, 19))
+            v[8] = 1 if ((oldBoard[3] == 0 and board[3] == self.colour) or (oldBoard[7] == 0 and board[7] == self.colour) or (oldBoard[11] == 0 and board[11] == self.colour) \
+                or (oldBoard[17] == 0 and board[17] == self.colour) or (oldBoard[19] == 0 and board[19] == self.colour)) else 0
             v[9] = self.getNumPiecesOnBoard(state, 3 - self.colour)
 
-            fitness = 0 # init
+            S = 0 # init
+
+            debug(state)
 
             for i in range(NUM_GENES):
+                debug("v" + str(i) + ": " + str(v[i]))
                 S += v[i] * self.g[i] # evaluate state value S
 
-            if(fitness > maxFitness):
-                maxFitness = S
+            debug(S)
+
+            if(S > max_S):
+                max_S = S
                 bestState = state
 
         return bestState
@@ -273,3 +316,5 @@ agent = Agent(genes, colourToPlay)
 inState = agent.readNextState()
 agent.printState(inState)
 agent.prettyPrintState(inState)
+
+agent.getBestSuccessor(agent.getSuccessors(inState), inState) # test
