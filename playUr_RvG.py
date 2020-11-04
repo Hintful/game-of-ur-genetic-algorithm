@@ -7,7 +7,7 @@ from copy import deepcopy
 from agent import *
 from winGame import *
 
-def playGame(agentFile, colourToPlay, genes):
+def playGame(colourToPlay, genes):
 
     win = False
     blackWon = False
@@ -57,4 +57,4 @@ def main():
     with open(agentFile) as f:
         genes = f.read().splitlines()
 
-    playGame(agentFile, colourToPlay, genes)
+    playGame(colourToPlay, genes)
