@@ -30,9 +30,6 @@ def winGame(state):
         elif i == Piece.White:
             boardEmptyOfWhiteTiles = False
 
-    blackEmpty = True
-    boardEmptyOfBlackTiles = True
-
     if blackEmpty and boardEmptyOfBlackTiles:
         win = True
         print("Black Won")
