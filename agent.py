@@ -14,8 +14,6 @@ DEBUG = False
 def debug(s):
     print(s) if DEBUG == True else ''
 
-
-
 class Piece(IntEnum):
     NoPiece = 0
     Black = 1
@@ -304,10 +302,26 @@ class Agent:
         return bestState
 
 
+    def playTurn(self, agentFile):
+        # play turn reads the next state of the board, 
+        # analyzes and computes the successor moves, 
+        # and then determines the best successor
+        
+        nextState = self.readNextState()
+        successors = self.getSuccessors(nextState)
+        bestSuccessor = self.getBestSuccessor(successors, nextState)
+        
+        with open(agentFile, 'w') as f:
+            f.write(bestSuccessor)
+
+        return bestSuccessor
+
+
 
 
 agentFile = sys.argv[1]
 colourToPlay = sys.argv[2]
+agentFile
 with open(agentFile) as f:
     genes = f.read().splitlines()
 

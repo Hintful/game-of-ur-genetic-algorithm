@@ -19,7 +19,7 @@ STATE:
     if a black piece would move onto square 20 it is removed from the board
 """
 
-class Agent:
+class RandomAgent:
 
     #random agent doesnt care about genes, just the colour its playing
     def __init__(self, colour):
@@ -96,8 +96,8 @@ class Agent:
 
 colourToPlay = sys.argv[1]
 
-#test for IO
-agent = Agent(colourToPlay)
-inState = agent.readNextState()
-agent.printState(inState)
-agent.prettyPrintState(inState)
+# # test for IO
+# agent = Agent(colourToPlay)
+# inState = agent.readNextState()
+# agent.printState(inState)
+# agent.prettyPrintState(inState)
