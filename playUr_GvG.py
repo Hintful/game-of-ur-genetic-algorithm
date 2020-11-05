@@ -31,8 +31,9 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
             #it's possible to have no moves, in this case
             #return the current state so as to not take a turn
             state[3] = rollDie()
-            blackMove = blackTeam.playTurn(state, debug)
-            state = blackMove if blackMove is not None else state
+            if state[3] > 0: # die roll of 0 skips black's move
+                blackMove = blackTeam.playTurn(state, debug)
+                state = blackMove if blackMove is not None else state
 
             if winGame(state): #checks if black's last turn won the game
                 blackWon = True
@@ -40,8 +41,9 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
                 break
         
             state[3] = rollDie()
-            whiteMove = whiteTeam.playTurn(state, debug)
-            state = whiteMove if whiteMove is not None else state
+            if state[3] > 0: # die roll of 0 skips white's move
+                whiteMove = whiteTeam.playTurn(state, debug)
+                state = whiteMove if whiteMove is not None else state
 
             if winGame(state): #checks if white's last turn won the game
                 whiteWon = True

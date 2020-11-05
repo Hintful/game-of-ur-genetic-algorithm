@@ -82,6 +82,8 @@ class Agent:
         
 
     def prettyPrintState(self, stateList):
+        if not stateList: # empty state
+            return
         #pretty prints the state in a human-readable way
         line = ""
         state = stateList[0]
@@ -165,10 +167,13 @@ class Agent:
     def getNextIndex(self, curIndex, roll, player): # gets next index for the given player on the board after moving "roll" squares
         if(player == Piece.White):
             if(curIndex == -1): # playing from hand
-                return roll - 1
+                # print("1", roll - 1)
+                return max(0, roll - 1) # takes care of cases where roll = 0
             elif(curIndex + roll >= 4 and curIndex + roll <= 7):
+                # print("2", curIndex + roll + 4)
                 return curIndex + roll + 4
             else:
+                # print("3", min(curIndex + roll, 18))
                 return min(curIndex + roll, 18)
         elif(player == Piece.Black):
             if(curIndex == -1):
@@ -182,7 +187,9 @@ class Agent:
         for i in range(minIndex, maxIndex + 1 - roll): # from minIndex to (maxIndex - roll), inclusive
             if(board[i] == self.colour):
                 nextIndex = self.getNextIndex(i, roll, self.colour)
-                if((board[nextIndex] == (3 - self.colour)) and nextIndex != 11):
+                if((nextIndex == 18 and self.colour == Piece.White) or (nextIndex == 20 and self.colour == Piece.Black)): # exiting cases shouldn't be considered
+                    continue
+                elif((board[nextIndex] == (3 - self.colour)) and nextIndex != 11):
                     return True
         return False
 
@@ -190,6 +197,8 @@ class Agent:
         for i in range(minIndex, maxIndex + 1 - roll):
             if(board[i] == (3 - self.colour)):
                 nextIndex = self.getNextIndex(i, roll, 3 - self.colour)
+                if((nextIndex == 18 and (3 - self.colour) == Piece.White) or (nextIndex == 20 and (3 - self.colour) == Piece.Black)): # exiting cases shouldn't be considered
+                    continue
                 if((board[nextIndex] == self.colour) and nextIndex != 11):
                     return True
         return False
