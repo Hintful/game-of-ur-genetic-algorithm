@@ -203,6 +203,10 @@ class Agent:
                     return True
         return False
 
+    def extraTurn(self, board, oldBoard):
+        return ((oldBoard[3] == 0 and board[3] == self.colour) or (oldBoard[7] == 0 and board[7] == self.colour) or (oldBoard[11] == 0 and board[11] == self.colour) \
+                or (oldBoard[17] == 0 and board[17] == self.colour) or (oldBoard[19] == 0 and board[19] == self.colour))
+
     def getSuccessors(self, state):
         successors = [] # list containing possible successor states
 
@@ -290,8 +294,7 @@ class Agent:
                 + float(1/16) * self.allyCapturable(board, 4, 0, 10))
             v[7] = -(float(4/16) * self.allyCapturable(board, 1, 12, 19) + float(6/16) * self.allyCapturable(board, 2, 12, 19) + float(4/16) * self.allyCapturable(board, 3, 12, 19) \
                 + float(1/16) * self.allyCapturable(board, 4, 12, 19))
-            v[8] = 1 if ((oldBoard[3] == 0 and board[3] == self.colour) or (oldBoard[7] == 0 and board[7] == self.colour) or (oldBoard[11] == 0 and board[11] == self.colour) \
-                or (oldBoard[17] == 0 and board[17] == self.colour) or (oldBoard[19] == 0 and board[19] == self.colour)) else 0
+            v[8] = 1 if self.extraTurn(board, oldBoard) else 0
             v[9] = self.getNumPiecesOnBoard(state, 3 - self.colour)
 
             S = 0 # init
@@ -308,7 +311,7 @@ class Agent:
                 max_S = S
                 bestState = state
 
-        return bestState
+        return bestState, self.extraTurn(bestState[0], oldBoard) # extraTurn == True if extra turn is granted after this turn, and False otherwise
 
 
     def playTurn(self, currentState, debug):
@@ -318,12 +321,12 @@ class Agent:
         # if debug is set to true, it will pretty print its moves for tracing
         
         successors = self.getSuccessors(currentState)
-        bestSuccessor = self.getBestSuccessor(successors, currentState)
+        bestSuccessor, extraTurn = self.getBestSuccessor(successors, currentState)
        
         if (debug):
-            self.prettyPrintState(bestSuccessor)
+            self.prettyPrintState(bestSuccessor if bestSuccessor else currentState)
 
-        return bestSuccessor
+        return bestSuccessor, extraTurn
 
 
 
