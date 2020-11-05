@@ -302,17 +302,17 @@ class Agent:
         return bestState
 
 
-    def playTurn(self, agentFile):
+    def playTurn(self, currentState, debug):
         # play turn reads the next state of the board, 
         # analyzes and computes the successor moves, 
         # and then determines the best successor
+        # if debug is set to true, it will pretty print its moves for tracing
         
-        nextState = self.readNextState()
-        successors = self.getSuccessors(nextState)
-        bestSuccessor = self.getBestSuccessor(successors, nextState)
-        
-        with open(agentFile, 'w') as f:
-            f.write(bestSuccessor)
+        successors = self.getSuccessors(currentState)
+        bestSuccessor = self.getBestSuccessor(successors, currentState)
+       
+        if (debug):
+            self.prettyPrintState(bestSuccessor)
 
         return bestSuccessor
 

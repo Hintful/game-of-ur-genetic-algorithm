@@ -1,12 +1,13 @@
 import sys
 import math
+from random import randint
 from enum import IntEnum
 from copy import deepcopy
 # Local Imports
 from agent import *
 from winGame import *
 
-def playGame(colourToPlay1, genes1, colourToPlay2, genes2)):
+def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
 
     win = False
     blackWon = False
@@ -20,29 +21,51 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2)):
         whiteTeam = Agent(genes1, colourToPlay1)
         blackTeam = Agent(genes2, colourToPlay2)
 
-    while not win:
+    for gameIndex in range(0, gamesToPlay):
+        #initialize empty board
+        state = [[0] * 20, 7, 7, 0]
+
+        while not win:
+            
+            #roll the die and return the move
+            #it's possible to have no moves, in this case
+            #return the current state so as to not take a turn
+            state[3] = rollDie()
+            blackMove = blackTeam.playTurn(state, debug)
+            state = blackMove if blackMove is not None else state
+
+            if winGame(state): #checks if black's last turn won the game
+                blackWon = True
+                win = True
+                break
         
-        state = blackTeam.playTurn()
+            state[3] = rollDie()
+            whiteMove = whiteTeam.playTurn(state, debug)
+            state = whiteMove if whiteMove is not None else state
 
-        if winGame(state): #checks if black's last turn won the game
-            blackWon = True
-            win = True
-            break
+            if winGame(state): #checks if white's last turn won the game
+                whiteWon = True
+                win = True
+                break
         
-        state = whiteTeam.playTurn()
+        #for sake of fairness, swap agents after each game
+        temp = whiteTeam
+        whiteTeam = blackTeam
+        blackTeam = temp
 
-        if winGame(state): #checks if white's last turn won the game
-            whiteWon = True
-            win = True
-            break
-
-    if blackWon:
-        print("Black Genetic Agent Won")
-    else: #whiiteWon
-        print("White Genetic Agent Won")
-
-    return
+        if blackWon:
+            print("Black Genetic Agent Won Game " + str(gameIndex))
+        else: #whiiteWon
+            print("White Genetic Agent Won Game " + str(gameIndex))
         
+
+def rollDie():
+    #helper to generate a game of ur die roll
+    dieRoll = 0
+    for index in range(0, 4):
+        dieRoll += randint(0, 1)
+
+    return dieRoll
 
 def main():
 
@@ -50,6 +73,7 @@ def main():
     colourToPlay1 = sys.argv[2]
     agentFile2 = sys.argv[3]
     colourToPlay2 = sys.argv[4]
+    gamesToPlay = int(sys.argv[5])
 
     with open(agentFile1) as f:
         genes1 = f.read().splitlines()
@@ -57,4 +81,6 @@ def main():
     with open(agentFile2) as f:
         genes2 = f.read().splitlines()
 
-    playGame(colourToPlay1, genes1, colourToPlay2, genes2)
+    playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, True)
+
+main()
