@@ -311,8 +311,10 @@ class Agent:
                 max_S = S
                 bestState = state
 
-        return bestState, self.extraTurn(bestState[0], oldBoard) # extraTurn == True if extra turn is granted after this turn, and False otherwise
-
+        if(bestState): # bestState not empty
+            return bestState, self.extraTurn(bestState[0], oldBoard) # extraTurn == True if extra turn is granted after this turn, and False otherwise
+        else: # bestState empty
+            return bestState, False
 
     def playTurn(self, currentState, debug):
         # play turn reads the next state of the board, 
