@@ -1,6 +1,7 @@
 import math
 from agent import Piece
 
+DEBUG = False
 
 def winGame(state):
     # needs to determine if the board is a win-state or not
@@ -32,12 +33,12 @@ def winGame(state):
 
     if blackEmpty and boardEmptyOfBlackTiles:
         win = True
-        print("Black Won")
+        if DEBUG: print("Black Won")
     elif whiteEmpty and boardEmptyOfWhiteTiles:
-        print("White Won")
+        if DEBUG: print("White Won")
         win = True
     else: #no win
-        print("No Winner Yet")
+        # if(DEBUG): print("No Winner Yet")
         win = False
 
     return win

@@ -7,6 +7,8 @@ from copy import deepcopy
 from agent import *
 from winGame import *
 
+DEBUG = False
+
 def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
 
     win = False
@@ -58,10 +60,13 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
         whiteTeam = blackTeam
         blackTeam = temp
 
-        if blackWon:
-            print("Black Genetic Agent Won Game " + str(gameIndex))
-        else: #whiiteWon
-            print("White Genetic Agent Won Game " + str(gameIndex))
+        if DEBUG: # debug print
+            if blackWon:
+                print("Black Genetic Agent Won Game " + str(gameIndex))
+            else: #whiiteWon
+                print("White Genetic Agent Won Game " + str(gameIndex))
+
+    return blackWon # return True if black won, and False if White won
         
 
 def rollDie():
@@ -72,20 +77,23 @@ def rollDie():
 
     return dieRoll
 
-def main():
 
-    agentFile1 = sys.argv[1]
-    colourToPlay1 = sys.argv[2]
-    agentFile2 = sys.argv[3]
-    colourToPlay2 = sys.argv[4]
-    gamesToPlay = int(sys.argv[5])
+# commented out main because command line args are no longer given to playUr_GvG
 
-    with open(agentFile1) as f:
-        genes1 = f.read().splitlines()
+# def main():
 
-    with open(agentFile2) as f:
-        genes2 = f.read().splitlines()
+#     # agentFile1 = sys.argv[1]
+#     # colourToPlay1 = sys.argv[2]
+#     # agentFile2 = sys.argv[3]
+#     # colourToPlay2 = sys.argv[4]
+#     # gamesToPlay = int(sys.argv[5])
 
-    playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, True)
+#     # with open(agentFile1) as f:
+#     #     genes1 = f.read().splitlines()
 
-main()
+#     # with open(agentFile2) as f:
+#     #     genes2 = f.read().splitlines()
+
+#     # playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, True)
+
+# main()
