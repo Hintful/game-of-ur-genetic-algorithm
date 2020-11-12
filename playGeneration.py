@@ -29,7 +29,7 @@ def main():
     agentWinRate = np.zeros(len(agentList)) # init winrate array
 
     for indexA in range(len(agentList) - 1): # iterate
-        for indexB in range(indexA, len(agentList)):
+        for indexB in range(indexA + 1, len(agentList)):
             # open gene files
             with open(AGENT_DIR + agentList[indexA]) as f:
                 genesA = f.read().splitlines()
