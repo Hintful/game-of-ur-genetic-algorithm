@@ -169,9 +169,9 @@ def evolveAgents():
 
         #now we apply our elitism, taking the 4 best members of this generation
         #this sorts the list and produces the 4 highest (original) indices
-        eliteIndices = sorted( [(i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
+        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
         for index in range(3):
-            nextGeneration.append(listOfGenes[eliteIndices[index]])
+            nextGeneration.append(listOfGenes[eliteIndices[index][1]])
 
         #the next generation is now complete
         listOfGenes = nextGeneration

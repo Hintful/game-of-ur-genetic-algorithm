@@ -99,6 +99,10 @@ def evolveAgents():
         #repeat
         generationIndex += 1
         print("Beginning generation " + str(generationIndex) + " with winrate " + str(lastWinRate))
+        #print("Generation is as follows:")
+        #for item in listOfGenes:
+        #    print(item)
+
 
         genWinRates = playGenerationGames(listOfGenes)
         originalWinRate = max(genWinRates)
@@ -138,9 +142,9 @@ def evolveAgents():
 
         #now we apply our elitism, taking the 4 best members of this generation
         #this sorts the list and produces the 4 highest (original) indices
-        eliteIndices = sorted( [(i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
+        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
         for index in range(3):
-            nextGeneration.append(listOfGenes[eliteIndices[index]])
+            nextGeneration.append(listOfGenes[eliteIndices[index][1]])
 
         #the next generation is now complete
         listOfGenes = nextGeneration
