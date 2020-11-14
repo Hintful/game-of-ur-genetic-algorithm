@@ -1,60 +1,89 @@
 import sys
 import math
-from randomagent import *
 from enum import IntEnum
 from copy import deepcopy
+from random import randint
 # Local Imports
+from randomagent import *
 from agent import *
 from winGame import *
 
-def playGame(colourToPlay, genes):
+DEBUG = False
+
+def playGame(colour, genes, gamesToPlay, debug):
 
     win = False
     blackWon = False
     whiteWon = False
     agentColour = ""
-    board = []
 
-    if colourToPlay == Piece.Black:
-        blackTeam = Agent(genes, colourToPlay)
+    if colour == Piece.Black:
+        blackTeam = Agent(genes, colour)
         whiteTeam = RandomAgent(Piece.White)
-        agentColour = "Black"
-
+        agentColor = "Black"
     else:
+        whiteTeam = Agent(genes, colour)
         blackTeam = RandomAgent(Piece.Black)
-        whiteTeam = Agent(genes, colourToPlay) 
-        agentColour = "White"
+        agentColor = "White"
 
-    while not win:
+    for gameIndex in range(0, gamesToPlay):
+        #initialize empty board
+        state = [[0] * 20, 7, 7, 0]
+        isBlackTurn = True # True if it's black's turn, False otherwise
+
+        while not win:
+            
+            #roll the die and return the move
+            #it's possible to have no moves, in this case
+            #return the current state so as to not take a turn
+            state[3] = rollDie()
+            if(state[3] == 0):
+                isBlackTurn = not isBlackTurn # skip turn if die roll is 0
+                continue
+
+            # play Turn
+            if isBlackTurn: # black's turn
+                blackMove, extraTurn = blackTeam.playTurn(state, debug)
+                state = blackMove if blackMove is not None else state # handle cases where no moves are available
+            else: # white's turn
+                whiteMove, extraTurn = whiteTeam.playTurn(state, debug)
+                state = whiteMove if whiteMove is not None else state
+
+
+            # check if last turn finished the game
+            if winGame(state):
+                blackWon = True if isBlackTurn else False
+                win = True
+                break
+            else: # game not yet over
+                isBlackTurn = not isBlackTurn if not extraTurn else isBlackTurn # swap turns if extraturn == False, grant extra turn if extraTurn == True
         
-        state = blackTeam.playTurn()
+        #for sake of fairness, swap agents after each game
+        temp = whiteTeam
+        whiteTeam = blackTeam
+        blackTeam = temp
 
-        if winGame(state): #checks if black's last turn won the game
-            blackWon = True
-            win = True
-            break
+        if DEBUG: # debug print
+            if blackWon:
+                print("Black Genetic Agent Won Game " + str(gameIndex))
+            else: #whiiteWon
+                print("White Genetic Agent Won Game " + str(gameIndex))
+
+
+            if (blackWon and agentColour == "Black") or (whiteWon and agentColour == "White"):
+                print("Genetic Agent Won Game " + str(gameIndex)) 
+            else:
+                print("Random Agent Won Game " + str(gameIndex)) 
+
+            return
+
+    return blackWon # return True if black won, and False if White won
         
-        state = whiteTeam.playTurn()
 
-        if winGame(state): #checks if white's last turn won the game
-            whiteWon = True
-            win = True
-            break
+def rollDie():
+    #helper to generate a game of ur die roll
+    dieRoll = 0
+    for index in range(0, 4):
+        dieRoll += randint(0, 1)
 
-    if (blackWon and agentColour == "Black") or (whiteWon and agentColour == "White"):
-        print("Agent Wins")
-    else:
-        print("Random Agent Wins")
-
-    return
-        
-
-def main():
-
-    agentFile = sys.argv[1]
-    colourToPlay = sys.argv[2]
-
-    with open(agentFile) as f:
-        genes = f.read().splitlines()
-
-    playGame(colourToPlay, genes)
+    return dieRoll
