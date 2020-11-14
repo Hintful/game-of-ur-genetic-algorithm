@@ -134,7 +134,7 @@ def evolveAgents():
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
             for gene in range(len(child) - 1):
                 #each gene is the average of its parents
-                child[gene] = round(parents[0][gene] + parents[1][gene] / 2, 3)
+                child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             
             #mutate each child, potentially
             mutateAgent(child, generator)
