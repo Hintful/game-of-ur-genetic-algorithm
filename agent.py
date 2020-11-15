@@ -49,16 +49,6 @@ class Agent:
     #The file corresponding to an agent will contain the 10 genes, and the colour
     #is provided by the manager that makes 2 agents compete
     def __init__(self, genes, colour):
-        # self.g1 = genes[0]
-        # self.g2 = genes[1]
-        # self.g3 = genes[2]
-        # self.g4 = genes[3]
-        # self.g5 = genes[4]
-        # self.g6 = genes[5]
-        # self.g7 = genes[6]
-        # self.g8 = genes[7]
-        # self.g9 = genes[8]
-        # self.g10 = genes[9]
         self.g = [0] * NUM_GENES # init list containing genes
 
         for i in range(NUM_GENES):
