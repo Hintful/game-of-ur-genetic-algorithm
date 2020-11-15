@@ -1,11 +1,11 @@
 import math
 import numpy as np
+import copy
 from playUr_GvG import playGame
 
 # global constant
 AGENT_DIR = "agentFiles/" # directory for agent files
 NUM_GAMES_PER_PAIR = 30 # number of games played between each pair of agents
-DEBUG = False
 ROUND_DIGIT = 3
 WINRATE_THRESHOLD = float(0.1)
 
@@ -18,6 +18,10 @@ GENE_VAL_MAX = 50
 NUM_CHILD_MUTATE = 12
 NUM_CHILD_RANDOM = 5
 NUM_CHILD_ELITE = 3
+
+# flag
+DEBUG = False
+USE_BEST_PREVIOUS_GEN = False # True if new generation is to be generated from the best of the previous generations, instead of the immediate preceding generation, and False otherwise
 
 def printWinRate(agentWinRate): # prints out agent winrate
     for i in range(len(agentWinRate)):
@@ -48,7 +52,7 @@ def getBaselineWinrate(baselineAgent, agent):
         else:
             winCount += (1 - blackWon)
 
-    return round((winCount / numBaselineGames * 100), ROUND_DIGIT)
+    return winCount / numBaselineGames
 
 # main ---------------------------
 # agentList is a list of genes for each agent
@@ -122,9 +126,13 @@ def evolveAgents():
     lastWinRate = 0
 
     baselineAgent = createBaselineAgent() # create baseline random agent
+    bestBaselineWinrate = 0 # init
+    bestGen = 0 # init
 
     bestWinRate = 0
     bestAgent = []
+    bestGenerationGenes = [] # init
+
     # a numpy RNG used for parent selection
     generator = np.random.default_rng()
     while True:
@@ -150,7 +158,11 @@ def evolveAgents():
         print("Best agent of generation " + str(generationIndex) + " winrate of " + str(genWinRate) + "%" + " against other agent of the same generation")
 
         bestGenerationAgent = listOfGenes[genWinRates.index(max(genWinRates))]
-        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(getBaselineWinrate(baselineAgent, bestGenerationAgent)) + "%" + " against baseline agent\n")
+        baselineWinrate = getBaselineWinrate(baselineAgent, bestGenerationAgent)
+        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(round(baselineWinrate * 100, ROUND_DIGIT)) + "%" + " against baseline agent\n")
+
+
+
         
         if genWinRate > bestWinRate:
             bestWinRate = genWinRate
@@ -171,6 +183,14 @@ def evolveAgents():
         lastWinRate = genWinRate
         normalizedList = normalizeList(genWinRates)
         nextGeneration = []
+
+        if baselineWinrate > bestBaselineWinrate:
+            bestBaselineWinrate = baselineWinrate
+            bestGenerationGenes = copy.deepcopy(listOfGenes)
+            bestGen = generationIndex
+        elif USE_BEST_PREVIOUS_GEN:
+            print("New generation worse; use generation " + str(bestGen) + " to derive children")
+            listOfGenes = bestGenerationGenes
         
         # generate children from parents
         for newChild in range(0, NUM_CHILD_MUTATE):
@@ -202,6 +222,8 @@ def evolveAgents():
 
         #the next generation is now complete
         listOfGenes = nextGeneration
+
+        
 
 
 evolveAgents()
