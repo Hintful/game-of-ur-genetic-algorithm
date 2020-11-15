@@ -28,31 +28,39 @@ def printWinRate(agentWinRate): # prints out agent winrate
         print("Agent " + str(i) + " winrate", end=': ')
         print(str(round(agentWinRate[i] * 100, ROUND_DIGIT)) + "%")
 
-def createBaselineAgent():
-    agent = [0] * NUM_GENES
-    for gene in range(NUM_GENES):
-        agent[gene] = (GENE_VAL_MAX - GENE_VAL_MIN) * np.random.random_sample() + GENE_VAL_MIN
+def createBaselineAgents():
+    numBaselineAgents = 50
+    baselineAgents = []
 
-    return agent
+    for i in range(numBaselineAgents):
+        agent = [0] * NUM_GENES
+        for gene in range(NUM_GENES):
+            agent[gene] = (GENE_VAL_MAX - GENE_VAL_MIN) * np.random.random_sample() + GENE_VAL_MIN
 
-def getBaselineWinrate(baselineAgent, agent):
-    numBaselineGames = 100
+        baselineAgents.append(agent)
+
+    return baselineAgents
+
+def getBaselineWinrate(baselineAgents, agent):
+    numBaselineGames = 30
+    numBaselineAgents = len(baselineAgents)
     winCount = 0 # init
 
-    for i in range(numBaselineGames):
-        if i % 2 == 0:
-            colourBaseline, colourAgent = 'w', 'b'
-        else:
-            colourBaseline, colourAgent = 'b', 'w'
+    for baselineAgent in baselineAgents:
+        for i in range(numBaselineGames):
+            if i % 2 == 0:
+                colourBaseline, colourAgent = 'w', 'b'
+            else:
+                colourBaseline, colourAgent = 'b', 'w'
 
-        blackWon = playGame(colourBaseline, baselineAgent, colourAgent, agent, 1, DEBUG)
+            blackWon = playGame(colourBaseline, baselineAgent, colourAgent, agent, 1, DEBUG)
 
-        if(colourAgent == 'b'):
-            winCount += blackWon
-        else:
-            winCount += (1 - blackWon)
+            if(colourAgent == 'b'):
+                winCount += blackWon
+            else:
+                winCount += (1 - blackWon)
 
-    return winCount / numBaselineGames
+    return winCount / (numBaselineGames * numBaselineAgents)
 
 # main ---------------------------
 # agentList is a list of genes for each agent
@@ -125,7 +133,7 @@ def evolveAgents():
     generationIndex = 0
     lastWinRate = 0
 
-    baselineAgent = createBaselineAgent() # create baseline random agent
+    baselineAgents = createBaselineAgents() # create baseline random agents
     bestBaselineWinrate = 0 # init
     bestGen = 0 # init
 
@@ -155,11 +163,11 @@ def evolveAgents():
         originalWinRate = max(genWinRates)
         genWinRate = round(originalWinRate * 100, ROUND_DIGIT)
 
-        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(genWinRate) + "%" + " against other agent of the same generation")
+        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(genWinRate) + "%" + " against the other agent of the same generation")
 
         bestGenerationAgent = listOfGenes[genWinRates.index(max(genWinRates))]
-        baselineWinrate = getBaselineWinrate(baselineAgent, bestGenerationAgent)
-        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(round(baselineWinrate * 100, ROUND_DIGIT)) + "%" + " against baseline agent\n")
+        baselineWinrate = getBaselineWinrate(baselineAgents, bestGenerationAgent)
+        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(round(baselineWinrate * 100, ROUND_DIGIT)) + "%" + " against static baseline agents\n")
 
 
 
