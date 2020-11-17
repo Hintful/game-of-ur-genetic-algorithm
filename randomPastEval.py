@@ -132,7 +132,7 @@ def evolveAgents():
             else:
                 colour = Piece.Black
 
-            blackWon = playGameRandom(colour, bestAgent, 10, DEBUG)
+            blackWon = playGameRandom(colour, bestAgent, 1, DEBUG)
 
             if ((colour == Piece.Black and blackWon)
                     or (colour == Piece.White and not blackWon)):
