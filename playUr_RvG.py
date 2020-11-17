@@ -4,13 +4,13 @@ from enum import IntEnum
 from copy import deepcopy
 from random import randint
 # Local Imports
-from randomagent import *
-from agent import *
+from randomagent import RandomAgent
+from agent import Agent
 from winGame import *
 
 DEBUG = False
 
-def playGame(colour, genes, gamesToPlay, debug):
+def playGameRandom(colour, genes, gamesToPlay, debug):
 
     win = False
     blackWon = False
