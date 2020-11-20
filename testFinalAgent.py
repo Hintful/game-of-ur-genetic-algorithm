@@ -1,4 +1,5 @@
 import math
+import sys
 from agent import Piece
 from playUr_RvG import playGameRandom
 
@@ -25,7 +26,8 @@ def playRandom(finalAgent):
     print("Winrate of the final agent against random agent over " + str(NUM_GAMES) + " games is " + str(round(gamesWon / NUM_GAMES * 100, ROUND_DIGIT)) + "%")
 
 def main():
-    with open('FinalAgent', 'r') as f:
+    finalAgentFile = sys.argv[1]
+    with open(finalAgentFile, 'r') as f:
         finalAgent = [float(i) for i in f.read().splitlines()]
 
     print(finalAgent)

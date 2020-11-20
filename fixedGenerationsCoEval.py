@@ -15,7 +15,7 @@ WINRATE_THRESHOLD = float(0.1)
 
 # gene constants
 NUM_GENES = 10
-GENE_VAL_MIN = 0
+GENE_VAL_MIN = 1
 GENE_VAL_MAX = 50
 
 # child constants
@@ -118,7 +118,7 @@ def mutateAgent(genes, rnGenerator):
     mutateChance = 0.25
     mutateMultiplier = 0.15
 
-    for index in range(len(genes)):
+    for index in range(NUM_GENES):
         mutate = rnGenerator.integers(0, 100)
         if mutate < int(mutateChance * 100):
             mutationAmount = rnGenerator.choice([1 + mutateMultiplier, 1 - mutateMultiplier])
@@ -173,12 +173,10 @@ def evolveAgents():
         allWinrates[generationIndex] = genWinRate
 
         #do the same with each gene
-        for geneIndex in range(0, len(thisGenBestAgent)):
+        for geneIndex in range(0, NUM_GENES):
             generationGenes[geneIndex][generationIndex] = thisGenBestAgent[geneIndex]
 
-
         print("Best agent of generation " + str(generationIndex) + " winrate of " + str(genWinRate) + "%" + " against the other agent of the same generation")
-
         
         if genWinRate > bestWinRate:
             bestWinRate = genWinRate
@@ -193,7 +191,7 @@ def evolveAgents():
             child = [0] * NUM_GENES
             #this chooses 2 parents without replacement, using the final list as probabilities
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
-            for gene in range(len(child) - 1):
+            for gene in range(NUM_GENES):
                 #each gene is the average of its parents
                 child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             
@@ -235,7 +233,7 @@ def evolveAgents():
     plotlib.xlabel('Generation')
     plotlib.ylabel('Best Observed Winrate')
     plotlib.title('Co-genetic Winrate by Generation')
-    plotlib.savefig('CogenWinrate.pdf')
+    plotlib.savefig('CogenWinrate.png')
 
     #now the evolution of each gene
     for geneListIndex in range(0, 10):
@@ -246,6 +244,6 @@ def evolveAgents():
         plotlib.xlabel("Generation")
         plotlib.ylabel('Gene Value')
         plotlib.title('Gene ' + str(geneListIndex + 1) + ' by Generation')
-        plotlib.savefig('CogenGene' + str(geneListIndex + 1) + '.pdf')
+        plotlib.savefig('CogenGene' + str(geneListIndex + 1) + '.png')
 
 evolveAgents()

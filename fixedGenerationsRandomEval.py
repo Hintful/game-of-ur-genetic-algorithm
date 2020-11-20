@@ -18,7 +18,7 @@ WINRATE_THRESHOLD = float(1)
 
 # gene constants
 NUM_GENES = 10
-GENE_VAL_MIN = 0
+GENE_VAL_MIN = 1
 GENE_VAL_MAX = 50
 
 # child constants
@@ -173,7 +173,7 @@ def evolveAgents():
             child = [0] * NUM_GENES
             #this chooses 2 parents without replacement, using the final list as probabilities
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
-            for gene in range(len(child) - 1):
+            for gene in range(NUM_GENES):
                 #each gene is the average of its parents
                 child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             

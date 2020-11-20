@@ -16,7 +16,7 @@ WINRATE_THRESHOLD = float(1)
 
 # gene constants
 NUM_GENES = 10
-GENE_VAL_MIN = 0
+GENE_VAL_MIN = 1
 GENE_VAL_MAX = 50
 
 # child constants
@@ -251,7 +251,7 @@ def evolveAgents():
     plotlib.xlabel('Generation')
     plotlib.ylabel('Best Observed Winrate')
     plotlib.title('Past Agent Baseline Winrate by Generation')
-    plotlib.savefig('PastWinrate.pdf')
+    plotlib.savefig('PastWinrate.png')
 
     #now the evolution of each gene
     for geneListIndex in range(0, 10):
@@ -262,7 +262,7 @@ def evolveAgents():
         plotlib.xlabel("Generation")
         plotlib.ylabel('Gene Value')
         plotlib.title('Gene ' + str(geneListIndex + 1) + ' by Generation')
-        plotlib.savefig('PastGene' + str(geneListIndex + 1) + '.pdf')
+        plotlib.savefig('PastGene' + str(geneListIndex + 1) + '.png')
 
 
 evolveAgents()

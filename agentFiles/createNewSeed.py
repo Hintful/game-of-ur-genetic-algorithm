@@ -4,7 +4,7 @@ import random
 NUM_AGENTS = 20
 NUM_GENES = 10
 
-GENE_VAL_MIN = 0
+GENE_VAL_MIN = 1
 GENE_VAL_MAX = 50
 
 AGENT_LIST_FILE = "agentList"
