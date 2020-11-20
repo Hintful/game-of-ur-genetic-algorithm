@@ -75,7 +75,7 @@ def playGameRandom(colour, genes, gamesToPlay, debug):
             else:
                 print("Random Agent Won Game " + str(gameIndex)) 
 
-            return
+            return blackWon
 
     return blackWon # return True if black won, and False if White won
         
