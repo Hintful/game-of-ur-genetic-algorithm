@@ -114,7 +114,7 @@ def mutateAgent(genes, rnGenerator):
     mutateChance = 0.25
     mutateMultiplier = 0.15
 
-    for index in range(len(genes) - 1):
+    for index in range(NUM_GENES):
         mutate = rnGenerator.integers(0, 100)
         if mutate < int(mutateChance * 100):
             mutationAmount = rnGenerator.choice([1 + mutateMultiplier, 1 - mutateMultiplier])
@@ -169,8 +169,6 @@ def evolveAgents():
         baselineWinrate = getBaselineWinrate(baselineAgents, bestGenerationAgent)
         print("Best agent of generation " + str(generationIndex) + " winrate of " + str(round(baselineWinrate * 100, ROUND_DIGIT)) + "%" + " against static baseline agents\n")
 
-
-
         
         if genWinRate > bestWinRate:
             bestWinRate = genWinRate
@@ -205,7 +203,7 @@ def evolveAgents():
             child = [0] * NUM_GENES
             #this chooses 2 parents without replacement, using the final list as probabilities
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
-            for gene in range(len(child) - 1):
+            for gene in range(NUM_GENES):
                 #each gene is the average of its parents
                 child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             
