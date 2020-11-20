@@ -29,7 +29,6 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
         isBlackTurn = True # True if it's black's turn, False otherwise
 
         while not win:
-            
             #roll the die and return the move
             #it's possible to have no moves, in this case
             #return the current state so as to not take a turn
@@ -45,7 +44,6 @@ def playGame(colourToPlay1, genes1, colourToPlay2, genes2, gamesToPlay, debug):
             else: # white's turn
                 whiteMove, extraTurn = whiteTeam.playTurn(state, debug)
                 state = whiteMove if whiteMove is not None else state
-
 
             # check if last turn finished the game
             if winGame(state):

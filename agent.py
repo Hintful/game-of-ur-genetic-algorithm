@@ -58,8 +58,10 @@ class Agent:
 
         if colour == 'w':
             self.colour = Piece.White
-        else:
+        elif colour == 'b':
             self.colour = Piece.Black
+        else:
+            print("Agent color exception")
 
     #pass this the full list of states
     def printState(self, stateList):
@@ -285,7 +287,7 @@ class Agent:
             v[7] = -(float(4/16) * self.allyCapturable(board, 1, 12, 19) + float(6/16) * self.allyCapturable(board, 2, 12, 19) + float(4/16) * self.allyCapturable(board, 3, 12, 19) \
                 + float(1/16) * self.allyCapturable(board, 4, 12, 19))
             v[8] = 1 if self.extraTurn(board, oldBoard) else 0
-            v[9] = self.getNumPiecesOnBoard(state, 3 - self.colour)
+            v[9] = -self.getNumPiecesOnBoard(state, 3 - self.colour)
 
             S = 0 # init
 

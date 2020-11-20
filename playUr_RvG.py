@@ -18,11 +18,11 @@ def playGameRandom(colour, genes, gamesToPlay, debug):
     agentColour = ""
 
     if colour == Piece.Black:
-        blackTeam = Agent(genes, colour)
+        blackTeam = Agent(genes, 'b')
         whiteTeam = RandomAgent(Piece.White)
         agentColor = "Black"
     else:
-        whiteTeam = Agent(genes, colour)
+        whiteTeam = Agent(genes, 'w')
         blackTeam = RandomAgent(Piece.Black)
         agentColor = "White"
 
@@ -32,7 +32,6 @@ def playGameRandom(colour, genes, gamesToPlay, debug):
         isBlackTurn = True # True if it's black's turn, False otherwise
 
         while not win:
-            
             #roll the die and return the move
             #it's possible to have no moves, in this case
             #return the current state so as to not take a turn
@@ -49,6 +48,7 @@ def playGameRandom(colour, genes, gamesToPlay, debug):
                 whiteMove, extraTurn = whiteTeam.playTurn(state, debug)
                 state = whiteMove if whiteMove is not None else state
 
+            # blackTeam.prettyPrintState(state)
 
             # check if last turn finished the game
             if winGame(state):
@@ -59,15 +59,15 @@ def playGameRandom(colour, genes, gamesToPlay, debug):
                 isBlackTurn = not isBlackTurn if not extraTurn else isBlackTurn # swap turns if extraturn == False, grant extra turn if extraTurn == True
         
         #for sake of fairness, swap agents after each game
-        temp = whiteTeam
-        whiteTeam = blackTeam
-        blackTeam = temp
+        # temp = whiteTeam
+        # whiteTeam = blackTeam
+        # blackTeam = temp
 
         if DEBUG: # debug print
-            if blackWon:
-                print("Black Genetic Agent Won Game " + str(gameIndex))
-            else: #whiiteWon
-                print("White Genetic Agent Won Game " + str(gameIndex))
+            # if blackWon:
+            #     print("Black Genetic Agent Won Game " + str(gameIndex))
+            # else: #whiiteWon
+            #     print("White Genetic Agent Won Game " + str(gameIndex))
 
 
             if (blackWon and agentColour == "Black") or (whiteWon and agentColour == "White"):
