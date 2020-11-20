@@ -10,10 +10,22 @@ DEBUG = False
 ROUND_DIGIT = 3
 WINRATE_THRESHOLD = float(1)
 
+# gene constants
+NUM_GENES = 10
+GENE_VAL_MIN = 0
+GENE_VAL_MAX = 50
+
+# child constants
+NUM_CHILD_MUTATE = 12
+NUM_CHILD_RANDOM = 5
+NUM_CHILD_ELITE = 3
+
 def printWinRate(agentWinRate): # prints out agent winrate
     for i in range(len(agentWinRate)):
         print("Agent " + str(i) + " winrate", end=': ')
         print(str(round(agentWinRate[i] * 100, ROUND_DIGIT)) + "%")
+
+
 
 # main ---------------------------
 # agentList is a list of genes for each agent
@@ -65,18 +77,19 @@ def normalizeList(listOfNums):
 
 
 def mutateAgent(genes, rnGenerator):
-    #each gene has a 10% chance to mutate by +-25%
-    for index in range(len(genes) - 1):
-        mutate = rnGenerator.integers(0, 10)
-        if mutate == 0:
-            #1 in 10 chance
-            mutationAmount = rnGenerator.choice([1.5, 0.5])
+    mutateChance = 0.25
+    mutateMultiplier = 0.15
+
+    for index in range(NUM_GENES):
+        mutate = rnGenerator.integers(0, 100)
+        if mutate < int(mutateChance * 100):
+            mutationAmount = rnGenerator.choice([1 + mutateMultiplier, 1 - mutateMultiplier])
             genes[index] = genes[index] * mutationAmount
 
 def evolveAgents():
     #a list of lists of floats, each list corresponding to an agent
     listOfGenes = []
-    with open("agentList") as f:
+    with open(AGENT_DIR + "agentList") as f:
         agentList = f.read().splitlines() # read agent filenames from "/agentList"
         for agentFile in agentList:
             with open(AGENT_DIR + agentFile) as f2:
@@ -130,22 +143,30 @@ def evolveAgents():
         normalizedList = normalizeList(genWinRates)
         nextGeneration = []
     
-        for newChild in range(0, 8):
-            child = [0] * 10
+        for newChild in range(0, NUM_CHILD_MUTATE):
+            child = [0] * NUM_GENES
             #this chooses 2 parents without replacement, using the final list as probabilities
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
-            for gene in range(len(child) - 1):
+            for gene in range(NUM_GENES):
                 #each gene is the average of its parents
-                child[gene] = round(parents[0][gene] + parents[1][gene] / 2, 3)
+                child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             
             #mutate each child, potentially
             mutateAgent(child, generator)
             nextGeneration.append(child)
 
+        # generate new children with random genes
+        for newChild in range(0, NUM_CHILD_RANDOM):
+            child = [0] * NUM_GENES
+            for gene in range(NUM_GENES):
+                child[gene] = (GENE_VAL_MAX - GENE_VAL_MIN) * np.random.random_sample() + GENE_VAL_MIN # generate random gene in range [GENE_VAL_MIN, GENE_VAL_MAX)
+
+            nextGeneration.append(child)
+
         #now we apply our elitism, taking the 4 best members of this generation
         #this sorts the list and produces the 4 highest (original) indices
-        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
-        for index in range(3):
+        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:NUM_CHILD_ELITE]
+        for index in range(NUM_CHILD_ELITE):
             nextGeneration.append(listOfGenes[eliteIndices[index][1]])
 
         #the next generation is now complete

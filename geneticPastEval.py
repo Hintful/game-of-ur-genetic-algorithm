@@ -9,10 +9,54 @@ DEBUG = False
 ROUND_DIGIT = 3
 WINRATE_THRESHOLD = float(1)
 
+# gene constants
+NUM_GENES = 10
+GENE_VAL_MIN = 0
+GENE_VAL_MAX = 50
+
+# child constants
+NUM_CHILD_MUTATE = 12
+NUM_CHILD_RANDOM = 5
+NUM_CHILD_ELITE = 3
+
 def printWinRate(agentWinRate): # prints out agent winrate
     for i in range(len(agentWinRate)):
         print("Agent " + str(i) + " winrate", end=': ')
         print(str(round(agentWinRate[i] * 100, ROUND_DIGIT)) + "%")
+
+def createBaselineAgents():
+    numBaselineAgents = 50
+    baselineAgents = []
+
+    for i in range(numBaselineAgents):
+        agent = [0] * NUM_GENES
+        for gene in range(NUM_GENES):
+            agent[gene] = (GENE_VAL_MAX - GENE_VAL_MIN) * np.random.random_sample() + GENE_VAL_MIN
+
+        baselineAgents.append(agent)
+
+    return baselineAgents
+
+def getBaselineWinrate(baselineAgents, agent):
+    numBaselineGames = 30
+    numBaselineAgents = len(baselineAgents)
+    winCount = 0 # init
+
+    for baselineAgent in baselineAgents:
+        for i in range(numBaselineGames):
+            if i % 2 == 0:
+                colourBaseline, colourAgent = 'w', 'b'
+            else:
+                colourBaseline, colourAgent = 'b', 'w'
+
+            blackWon = playGame(colourBaseline, baselineAgent, colourAgent, agent, 1, DEBUG)
+
+            if(colourAgent == 'b'):
+                winCount += blackWon
+            else:
+                winCount += (1 - blackWon)
+
+    return winCount / (numBaselineGames * numBaselineAgents)
 
 # main ---------------------------
 # agentList is a list of genes for each agent
@@ -63,12 +107,13 @@ def normalizeList(listOfNums):
 
 
 def mutateAgent(genes, rnGenerator):
-    #each gene has a 10% chance to mutate by +-25%
-    for index in range(len(genes) - 1):
-        mutate = rnGenerator.integers(0, 10)
-        if mutate == 0 or mutate == 1:
-            #1 in 10 chance
-            mutationAmount = rnGenerator.choice([1.5, 0.5])
+    mutateChance = 0.25
+    mutateMultiplier = 0.15
+
+    for index in range(NUM_GENES):
+        mutate = rnGenerator.integers(0, 100)
+        if mutate < int(mutateChance * 100):
+            mutationAmount = rnGenerator.choice([1 + mutateMultiplier, 1 - mutateMultiplier])
             genes[index] = genes[index] * mutationAmount
 
 def evolveAgents():
@@ -80,7 +125,7 @@ def evolveAgents():
 
     #a list of lists of floats, each list corresponding to an agent
     listOfGenes = []
-    with open("agentList") as f:
+    with open(AGENT_DIR + "agentList") as f:
         agentList = f.read().splitlines() # read agent filenames from "/agentList"
         for agentFile in agentList:
             with open(AGENT_DIR + agentFile) as f2:
@@ -89,6 +134,8 @@ def evolveAgents():
     
     generationIndex = 0
     lastBaselineWinRate = 0
+
+    baselineAgents = createBaselineAgents()
 
     bestWinRate = 0
     bestAgent = []
@@ -104,7 +151,7 @@ def evolveAgents():
         #make 7 new kids and take the 4 highest rated agents from last generation
         #repeat
         generationIndex += 1
-        print("Beginning generation " + str(generationIndex) + " with baseline winrate " + str(lastBaselineWinRate))
+        print("Beginning generation " + str(generationIndex))
 
         genWinRates = playGenerationGames(listOfGenes)
 
@@ -115,6 +162,12 @@ def evolveAgents():
         bestIndex = genWinRates.index(genWinRate)
         genWinRate = round(genWinRate * 100, 3) #make it nicely formatted now
         genBestAgent = listOfGenes[bestIndex]
+
+        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(genWinRate) + "%" + " against the other agent of the same generation")
+
+        bestGenerationAgent = listOfGenes[genWinRates.index(max(genWinRates))]
+        baselineWinrate = getBaselineWinrate(baselineAgents, bestGenerationAgent)
+        print("Best agent of generation " + str(generationIndex) + " winrate of " + str(round(baselineWinrate * 100, ROUND_DIGIT)) + "%" + " against static baseline agents\n")
 
         #if its better than the last best agent, save it
         if genWinRate > bestWinRate:
@@ -155,11 +208,12 @@ def evolveAgents():
         normalizedList = normalizeList(genWinRates)
         nextGeneration = []
     
-        for newChild in range(0, 8):
-            child = [0] * 10
+        # generate children from parents
+        for newChild in range(0, NUM_CHILD_MUTATE):
+            child = [0] * NUM_GENES
             #this chooses 2 parents without replacement, using the final list as probabilities
             parents = generator.choice(listOfGenes, 2, False, normalizedList)
-            for gene in range(len(child) - 1):
+            for gene in range(NUM_GENES):
                 #each gene is the average of its parents
                 child[gene] = round((parents[0][gene] + parents[1][gene]) / 2, 3)
             
@@ -167,10 +221,18 @@ def evolveAgents():
             mutateAgent(child, generator)
             nextGeneration.append(child)
 
+        # generate new children with random genes
+        for newChild in range(0, NUM_CHILD_RANDOM):
+            child = [0] * NUM_GENES
+            for gene in range(NUM_GENES):
+                child[gene] = (GENE_VAL_MAX - GENE_VAL_MIN) * np.random.random_sample() + GENE_VAL_MIN # generate random gene in range [GENE_VAL_MIN, GENE_VAL_MAX)
+
+            nextGeneration.append(child)
+
         #now we apply our elitism, taking the 4 best members of this generation
         #this sorts the list and produces the 4 highest (original) indices
-        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:3]
-        for index in range(3):
+        eliteIndices = sorted( [(x, i) for (i,x) in enumerate(genWinRates)], reverse=True )[:NUM_CHILD_ELITE]
+        for index in range(NUM_CHILD_ELITE):
             nextGeneration.append(listOfGenes[eliteIndices[index][1]])
 
         #the next generation is now complete
