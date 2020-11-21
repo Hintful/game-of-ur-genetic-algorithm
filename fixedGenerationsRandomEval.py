@@ -11,7 +11,7 @@ from matplotlib.ticker import (MultipleLocator,
 
 # global constant
 AGENT_DIR = "agentFiles/" # directory for agent files
-NUM_GAMES_PER_PAIR = 50 # number of games played between each pair of agents
+NUM_GAMES_PER_PAIR = 25 # number of games played between each pair of agents
 DEBUG = False
 ROUND_DIGIT = 3
 WINRATE_THRESHOLD = float(1)
