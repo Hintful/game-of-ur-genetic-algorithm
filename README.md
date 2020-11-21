@@ -24,6 +24,16 @@ Running `python3 createNewSeed.py` in `/agentFiles` directory creates 20 new ini
 
 
 
-## Instruction
+## Instructions
 
-`python3 playUr_GvG.py` 
+After setting up the initial agents, to generate only a FinalAgent with an auto-terminating process, run one of the following:
+
+`python3 geneticCoEval.py`
+`python3 geneticPastEval.py`
+`python3 randomPastEval.py`
+
+To create a FinalAgent and various plots including best observed winrate and gene values across a fixed 20 generations, run one of the following:
+
+`python3 fixedGenerationsCoEval.py`
+`python3 fixedGenerationsPastEval.py`
+`python3 fixedGenerationsRandomEval.py`
