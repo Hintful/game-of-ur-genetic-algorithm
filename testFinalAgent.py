@@ -9,7 +9,7 @@ DEBUG = False
 ROUND_DIGIT = 3
 
 def playRandom(finalAgent):
-    NUM_GAMES = 1000
+    NUM_GAMES = 5000
 
     gamesWon = 0 # init
 
