@@ -91,10 +91,10 @@ def mutateAgent(genes, rnGenerator):
 
 def evolveAgents():
     #load the last run's best agent to evaluate against
-    priorFinalAgent = []
-    with open('FinalAgent', 'r') as f:
-        priorFinalAgent = [float(i) for i in f.read().splitlines()]
-        f.close()
+    # priorFinalAgent = []
+    # with open('FinalAgent', 'r') as f:
+    #     priorFinalAgent = [float(i) for i in f.read().splitlines()]
+    #     f.close()
 
     #a list of lists of floats, each list corresponding to an agent
     listOfGenes = []
@@ -215,7 +215,7 @@ def evolveAgents():
     plotlib.xlabel('Generation')
     plotlib.ylabel('Best Observed Winrate')
     plotlib.title('VS Random Agent Winrate by Generation')
-    plotlib.savefig('RandomWinrate.pdf')
+    plotlib.savefig('RandomWinrate.png')
 
     #now the evolution of each gene
     for geneListIndex in range(0, 10):
@@ -226,7 +226,7 @@ def evolveAgents():
         plotlib.xlabel("Generation")
         plotlib.ylabel('Gene Value')
         plotlib.title('Gene ' + str(geneListIndex + 1) + ' by Generation')
-        plotlib.savefig('RandomGene' + str(geneListIndex + 1) + '.pdf')
+        plotlib.savefig('RandomGene' + str(geneListIndex + 1) + '.png')
 
 
 evolveAgents()
